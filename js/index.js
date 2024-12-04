@@ -14,6 +14,7 @@ window.addEventListener("load", function() {
 		forceWebGL2: true,
 		enableSignatureBadge: true,
 		html5CursorSupport: true,
+		logInvalidCerts: true,
 		servers: [{
 				addr: "wss://mc.arch.lol/",
 				name: "ArchMC"

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" style="width:100%;height:100%;background-color:black;">
+<html lang="zh-CN" onselectstart="return false" oncontextmenu=self.event.returnValue=false>
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
@@ -13,7 +13,13 @@
 		<meta property="og:image" content="./favicon.png" />
 		<link type="image/png" rel="shortcut icon" href="./favicon.png" />
 	</head>
-	<body style="margin:0px;width:100%;height:100%;overflow:hidden;background-color:black;" id="game_frame">
+	<body style="margin:0;padding:0;">
+		<!-- 游戏容器 -->
+		<div style="position:fixed;display:block;height:100%;width:100%;background-color:black;overflow:hidden;text-align:center;"
+			id="game_frame">
+			<h1 style="color:white;margin:20px;">正在加载所需资源......<br />初次加载需要较长时间，请您耐心等待！</h1>
+		</div>
+		<!-- js -->
 		<script type="text/javascript" src="./js/index.js"></script>
 		<script type="text/javascript" src="./js/classes.js"></script>
 		<!-- 谷歌广告 -->
