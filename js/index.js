@@ -12,9 +12,7 @@ window.addEventListener("load", function() {
 		enableDownloadOfflineButton: true,
 		downloadOfflineButtonLink: "https://gamebox.heheda.top",
 		forceWebGL2: true,
-		enableSignatureBadge: true,
 		html5CursorSupport: true,
-		logInvalidCerts: true,
 		servers: [{
 				addr: "wss://mc.arch.lol/",
 				name: "ArchMC"

@@ -3,25 +3,41 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
-		<meta name="description" content="Play minecraft 1.8 in your browser" />
-		<meta name="keywords" content="eaglercraft, eaglercraftx, minecraft, 1.8, 1.8.8" />
 		<title>我的世界网页版 - 让快乐一触即发</title>
+		<meta name="description" content="在浏览器中畅玩我的世界" />
+		<meta name="keywords" content="我的世界, 我的世界网页版, 我的世界联机, minecraft" />
 		<meta property="og:locale" content="zh-CN" />
+		<meta name="theme-color" content="#712f00">
 		<meta property="og:type" content="website" />
-		<meta property="og:title" content="EaglercraftX 1.8" />
-		<meta property="og:description" content="Play minecraft 1.8 in your browser" />
+		<meta property="og:title" content="我的世界网页版" />
+		<meta property="og:description" content="在浏览器中畅玩我的世界" />
+		<!-- 资源预载入 -->
+		<link rel="preload" as="script" href="./js/index.js" />
+		<link rel="preload" as="script" href="./js/classes.js" />
+		<link rel="preload" as="style" href="./index.css" />
 		<meta property="og:image" content="./favicon.png" />
 		<link type="image/png" rel="shortcut icon" href="./favicon.png" />
+		<link rel="stylesheet" type="text/css" href="./index.css">
 	</head>
-	<body style="margin:0;padding:0;">
+	<body>
 		<!-- 游戏容器 -->
-		<div style="position:fixed;display:block;height:100%;width:100%;background-color:black;overflow:hidden;text-align:center;"
-			id="game_frame">
-			<h1 style="color:white;margin:20px;">正在加载所需资源......<br />初次加载需要较长时间，请您耐心等待！</h1>
+		<div id="game_frame">
+			<div class="loading">
+				<h1 class="h1 hb">正在加载运行环境......<br />初次加载可能需要较长时间，请您耐心等待！</h1>
+				<div class="sk-chase">
+					<div class="sk-chase-dot"></div>
+					<div class="sk-chase-dot"></div>
+					<div class="sk-chase-dot"></div>
+					<div class="sk-chase-dot"></div>
+					<div class="sk-chase-dot"></div>
+					<div class="sk-chase-dot"></div>
+				</div>
+				<h2 class="h1 ht">温馨提示：若长时间停留此页面，请您尝试刷新网页，或者更换网络环境后重试！</h2>
+			</div>
 		</div>
 		<!-- js -->
-		<script type="text/javascript" src="./js/index.js"></script>
-		<script type="text/javascript" src="./js/classes.js"></script>
+		<script type="text/javascript" src="./js/index.js" charset="UTF-8"></script>
+		<script type="text/javascript" src="./js/classes.js" charset="UTF-8"></script>
 		<!-- 谷歌广告 -->
 		<script async
 			src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3670070169085381"
