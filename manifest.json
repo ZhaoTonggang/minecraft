@@ -1,0 +1,68 @@
+{
+	"dir": "ltr",
+	"lang": "zh",
+	"name": "我的世界网页版",
+	"short_name": "我的世界",
+	"theme_color": "#52c0f9",
+	"background_color": "#52c0f9",
+	"display": "standalone",
+	"orientation": "any",
+	"description": "让快乐一触即发",
+	"scope": "./",
+	"start_url": "./",
+	"prefer_related_applications": false,
+	"icons": [{
+			"src": "./icons/72x72.png",
+			"sizes": "72x72",
+			"type": "image/png"
+		},
+		{
+			"src": "./icons/96x96.png",
+			"sizes": "96x96",
+			"type": "image/png"
+		},
+		{
+			"src": "./icons/128x128.png",
+			"sizes": "128x128",
+			"type": "image/png"
+		},
+		{
+			"src": "./icons/144x144.png",
+			"sizes": "144x144",
+			"type": "image/png"
+		},
+		{
+			"src": "./icons/152x152.png",
+			"sizes": "152x152",
+			"type": "image/png"
+		},
+		{
+			"src": "./icons/192x192.png",
+			"sizes": "192x192",
+			"type": "image/png"
+		},
+		{
+			"src": "./icons/256x256.png",
+			"type": "image/png",
+			"sizes": "256x256"
+		},
+		{
+			"src": "./icons/512x512.png",
+			"sizes": "512x512",
+			"type": "image/png"
+		}
+	],
+	"url": "./",
+	"manifestUrl": "./manifest.json",
+	"shortcuts": [{
+		"name": "更多游戏",
+		"url": "https://gamebox.heheda.top",
+		"description": "就玩与众不同！"
+	}],
+	"categories": [
+		"games"
+	],
+	"edge_side_panel": {
+		"preferred_width": 480
+	}
+}
