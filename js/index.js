@@ -1,5 +1,5 @@
 "use strict";
-window.addEventListener("load", function() {
+window.addEventListener("load", () => {
 	let relayId = Math.floor(Math.random() * 3);
 	window.eaglercraftXOpts = {
 		demoMode: false,
