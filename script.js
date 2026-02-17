@@ -7,7 +7,7 @@ document.getElementById('playbut').onclick = async function() {
 	const lang = navigator.language.split("-");
 	const ht = document.getElementById('ht');
 	// 定义文件名
-	const zName = 'classes';
+	const zName = 'data';
 	let sevenZip, cache, buffer;
 	try {
 		// 初始化 7-Zip 实例
@@ -88,7 +88,7 @@ document.getElementById('playbut').onclick = async function() {
 		script.type = 'text/javascript';
 		// 赋值给script的src
 		const blobUrl = URL.createObjectURL(new Blob([new TextDecoder('utf-8').decode(sevenZip.FS.readFile(
-			zName + '.js'))], {
+			'classes.js'))], {
 			type: 'application/javascript; charset=utf-8'
 		}));
 		script.src = blobUrl;
@@ -113,7 +113,9 @@ document.getElementById('playbut').onclick = async function() {
 		window.eaglercraftXOpts = {
 			demoMode: false,
 			container: "game_frame",
-			assetsURI: "./data/assets.epk",
+			assetsURI: URL.createObjectURL(new Blob([sevenZip.FS.readFile('assets.epk')], {
+				type: 'application/octet-stream'
+			})),
 			localesURI: "./lang/",
 			lang: lang[0] + "_" + lang[1],
 			worldsDB: "worlds",
