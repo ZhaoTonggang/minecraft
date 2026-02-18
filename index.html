@@ -13,6 +13,7 @@
 		<meta property="og:description" content="在浏览器中畅玩我的世界" />
 		<!-- 资源预载入 -->
 		<link rel="preload" as="style" href="./style.css" />
+		<link rel="preload" as="script" href="./7z/js7z.js" />
 		<link rel="preload" as="script" href="./script.js" />
 		<meta property="og:image" content="./favicon.png" />
 		<link type="image/png" rel="shortcut icon" href="./favicon.png" />
@@ -42,7 +43,8 @@
 						alt="EdgeOne"> EdgeOne</a> 提供CDN服务</p>
 		</div>
 		<!-- js -->
-		<script defer type='module' src="./script.js"></script>
+		<script defer type='text/javascript' src="./7z/js7z.js"></script>
+		<script defer type='text/javascript' src="./script.js"></script>
 		<!--PWA渐进式应用配置-->
 		<script async type="module">
 			import 'https://cdn.jsdelivr.net/npm/@pwabuilder/pwaupdate';

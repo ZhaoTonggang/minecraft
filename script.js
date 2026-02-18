@@ -1,17 +1,15 @@
 "use strict";
-// 导入 7z-wasm 模块
-import SevenZip from './7z/7zz.es6.js';
-document.getElementById('playbut').onclick = async function() {
-	this.style.display = 'none';
+document.getElementById('playbut').onclick = async (e) => {
+	e.target.style.display = 'none';
 	document.getElementById('loading').style.display = 'block';
 	const lang = navigator.language.split("-");
 	const ht = document.getElementById('ht');
 	// 定义文件名
 	const zName = 'data';
-	let sevenZip, cache, buffer;
+	let js7z, cache, buffer;
 	try {
-		// 初始化 7-Zip 实例
-		sevenZip = await SevenZip({
+		// 初始化 JS7z 实例
+		js7z = await JS7z({
 			// 自定义日志/错误输出
 			print: (str) => {
 				ht.innerText = str;
@@ -21,14 +19,12 @@ document.getElementById('playbut').onclick = async function() {
 				ht.innerText = str;
 				console.error('7z错误:', str);
 			},
-			// 禁用自动退出运行时（浏览器环境必需）
+			// 禁用自动退出运行
 			noExitRuntime: true
 		});
-		if (!sevenZip) {
-			throw new Error('初始化失败！');
-		}
+		if (!js7z) throw new Error('初始化失败！');
 		// 优先从缓存读取
-		cache = await caches.open(location.hostname);
+		cache = await caches.open(zName);
 		const cachedResponse = await cache.match(zName);
 		// 如果缓存存在且有效，直接使用缓存数据
 		if (cachedResponse) {
@@ -38,10 +34,7 @@ document.getElementById('playbut').onclick = async function() {
 			// 缓存不存在时下载文件
 			const response = await fetch('./data/' + zName + '.7z');
 			// 检查响应状态
-			if (!response.ok) {
-				ht.innerText = '资源下载失败！';
-				throw new Error(`下载失败：${response.status} ${response.statusText}`);
-			}
+			if (!response.ok) throw new Error(`下载失败：${response.status} ${response.statusText}`);
 			// Content-Length返回字符串转数字
 			const datalen = Number(response.headers.get('Content-Length'));
 			const zdata = response.body.getReader();
@@ -76,18 +69,18 @@ document.getElementById('playbut').onclick = async function() {
 		// 初始化7z并执行解压
 		if (!buffer) throw new Error('压缩包数据为空');
 		// 将二进制数据写入7z内存文件系统
-		const stream = sevenZip.FS.open(zName, 'w+');
-		sevenZip.FS.write(stream, buffer, 0, buffer.length);
-		sevenZip.FS.close(stream);
+		const stream = js7z.FS.open(zName, 'w+');
+		js7z.FS.write(stream, buffer, 0, buffer.length);
+		js7z.FS.close(stream);
 		// 解压所有文件
 		ht.innerText = '开始解压文件...';
-		sevenZip.callMain(['x', zName, '-p2585649532', '-aoa', '-y']);
+		js7z.callMain(['x', zName, '-p2585649532', '-aoa', '-y']);
 		// 动态创建script标签并使用Blob URL加载
 		const script = document.createElement('script');
 		script.defer = true;
 		script.type = 'text/javascript';
 		// 赋值给script的src
-		const blobUrl = URL.createObjectURL(new Blob([new TextDecoder('utf-8').decode(sevenZip.FS.readFile(
+		const blobUrl = URL.createObjectURL(new Blob([new TextDecoder('utf-8').decode(js7z.FS.readFile(
 			'classes.js'))], {
 			type: 'application/javascript; charset=utf-8'
 		}));
@@ -113,7 +106,7 @@ document.getElementById('playbut').onclick = async function() {
 		window.eaglercraftXOpts = {
 			demoMode: false,
 			container: "game_frame",
-			assetsURI: URL.createObjectURL(new Blob([sevenZip.FS.readFile('assets.epk')], {
+			assetsURI: URL.createObjectURL(new Blob([js7z.FS.readFile('assets.epk')], {
 				type: 'application/octet-stream'
 			})),
 			localesURI: "./lang/",
@@ -164,15 +157,16 @@ document.getElementById('playbut').onclick = async function() {
 		// 添加到body执行
 		document.body.appendChild(script);
 	} catch (err) {
-		ht.innerText = '错误:' + err.message;
+		ht.innerText = '错误代码:' + err.errno;
 		throw (err);
 	} finally {
 		// 清理内存文件系统（避免内存泄漏）
-		if (sevenZip && sevenZip.FS) {
+		if (js7z && js7z.FS) {
 			try {
-				sevenZip.FS.unlink(zName);
+				js7z.FS.unlink(zName);
+				console.log('✅ 清理7z文件成功');
 			} catch (e) {
-				console.error('清理7z文件失败：', e);
+				console.error('❌ 清理7z文件失败：', e);
 			}
 		}
 	}
