@@ -1,3 +1,4 @@
+"use strict";
 importScripts('../7z/js7z.js');
 // 定义数据块大小
 const chunkSize = 1024 * 1024; // 1MB/块
