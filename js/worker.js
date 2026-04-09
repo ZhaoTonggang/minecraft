@@ -152,7 +152,7 @@ const downloadSlice = async (path, start, end, i, progressTracker) => {
 				sendStatus(`开始并行下载${totalSlices}个分片...`);
 				const sliceResults = await Promise.all(sliceTasks);
 				// 按分片索引排序，确保顺序正确
-				sliceResults.sort((a, b) => a.index - b.index);
+				sliceResults.sort((a, b) => a.i - b.i);
 				// 合并所有分片为完整文件
 				sendStatus('所有分片下载完成，正在合并数据...');
 				buffer = new Uint8Array(totalSize);
@@ -237,18 +237,15 @@ const downloadSlice = async (path, start, end, i, progressTracker) => {
 		sendStatus("正在解压数据...");
 		js7z.callMain(['x', zName, '-p2585649532', '-aoa', '-y']);
 		// 发送给主线
+		const jsArrayBuffer = js7z.FS.readFile('classes.js').buffer;
+		const epkArrayBuffer = js7z.FS.readFile('assets.epk').buffer;
 		self.postMessage({
 			type: 'complete',
 			data: {
-				js: URL.createObjectURL(new Blob([new TextDecoder('utf-8').decode(js7z.FS.readFile(
-					'classes.js'))], {
-					type: 'application/javascript; charset=utf-8'
-				})),
-				epk: URL.createObjectURL(new Blob([js7z.FS.readFile('assets.epk')], {
-					type: 'application/octet-stream'
-				}))
+				jsArrayBuffer: jsArrayBuffer,
+				epkArrayBuffer: epkArrayBuffer
 			}
-		}); // Transferable标记，提升性能;
+		}, [jsArrayBuffer, epkArrayBuffer]); // 转移ArrayBuffer所有权
 	} catch (err) {
 		sendError(err);
 		throw err;
