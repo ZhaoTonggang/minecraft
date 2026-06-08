@@ -13,7 +13,7 @@ body {
 	display: block;
 	height: 100%;
 	width: 100%;
-	background: #712f00 url("./data/minecraft.jpg") no-repeat center/cover fixed;
+	background: #712f00 url("./images/minecraft.jpg") no-repeat center/cover fixed;
 	overflow: hidden;
 	text-align: center;
 }
@@ -206,4 +206,45 @@ button:focus {
 	0% {
 		transform: scale(1.0);
 	}
+}
+
+/* 状态通知 */
+@keyframes fadeInOut {
+	0% {
+		opacity: 0;
+		transform: translateX(20px);
+	}
+
+	20% {
+		opacity: 1;
+		transform: translateX(0);
+	}
+
+	80% {
+		opacity: 1;
+		transform: translateX(0);
+	}
+
+	100% {
+		opacity: 0;
+		transform: translateX(20px);
+	}
+}
+
+#Status {
+	position: fixed;
+	top: 10px;
+	right: 10px;
+	color: #fff;
+	padding: 8px;
+	border-radius: 4px;
+	font-family: Arial, sans-serif;
+	font-size: 18px;
+	z-index: 9999;
+	animation: fadeInOut 5s ease-in-out forwards;
+}
+
+/* 关闭空广告 */
+ins.adsbygoogle[data-ad-status="unfilled"] {
+	display: none !important;
 }

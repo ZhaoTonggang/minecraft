@@ -7,20 +7,38 @@
 		<meta name="description" content="在浏览器中畅玩我的世界" />
 		<meta name="keywords" content="我的世界, 我的世界网页版, 我的世界联机, minecraft" />
 		<meta property="og:locale" content="zh-CN" />
-		<meta name="theme-color" content="#712f00">
 		<meta property="og:type" content="website" />
 		<meta property="og:title" content="我的世界网页版" />
 		<meta property="og:description" content="在浏览器中畅玩我的世界" />
 		<!-- 资源预载入 -->
 		<link rel="preload" as="style" href="./style.css" />
 		<link rel="preload" as="script" href="./js/script.js" />
-		<meta property="og:image" content="./favicon.png" />
-		<link type="image/png" rel="shortcut icon" href="./favicon.png" />
-		<link rel="stylesheet" type="text/css" href="./style.css">
+		<meta property="og:image" content="./images/icons/a16.png" />
+		<link rel="stylesheet" type="text/css" href="./style.css" />
+		<!-- Meta Tags -->
+		<meta name="mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-title" content="我的世界" />
+		<meta name="mobile-web-app-status-bar-style" content="black-translucent" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+		<meta name="theme-color" content="#712f00" />
+		<meta name="msapplication-TileColor" content="#712f00" />
+		<!--网站图标配置-->
+		<link rel="apple-touch-icon" sizes="192x192" href="./images/icons/192.png" />
+		<link rel="shortcut icon" type="image/png" sizes="16x16" href="./images/icons/a16.png" />
+		<link rel="icon" type="image/png" sizes="72x72" href="./images/icons/a72.png" />
+		<link rel="icon" type="image/png" sizes="96x96" href="./images/icons/a96.png" />
+		<link rel="icon" type="image/png" sizes="128x128" href="./images/icons/a128.png" />
+		<link rel="icon" type="image/png" sizes="144x144" href="./images/icons/a144.png" />
+		<link rel="icon" type="image/png" sizes="152x152" href="./images/icons/a152.png" />
+		<link rel="icon" type="image/png" sizes="192x192" href="./images/icons/a192.png" />
+		<link rel="icon" type="image/png" sizes="384x384" href="./images/icons/a384.png" />
+		<link rel="icon" type="image/png" sizes="512x512" href="./images/icons/a512.png" />
 		<!--PWA配置-->
 		<link rel="manifest" href="./manifest.json">
 	</head>
 	<body>
+		<div id="Status"></div>
 		<!-- 游戏容器 -->
 		<div id="game_frame">
 			<button id="playbut">开始游戏</button>
@@ -43,12 +61,6 @@
 		</div>
 		<!-- js -->
 		<script defer type='text/javascript' src="./js/script.js"></script>
-		<!--PWA渐进式应用配置-->
-		<script async type="module">
-			import 'https://cdn.jsdelivr.net/npm/@pwabuilder/pwaupdate';
-			const el = document.createElement('pwa-update');
-			document.body.appendChild(el);
-		</script>
 		<!-- 谷歌广告 -->
 		<script async
 			src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3670070169085381"

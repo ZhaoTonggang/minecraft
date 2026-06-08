@@ -1,4 +1,76 @@
 "use strict";
+// 开始 Service Worker
+(async () => {
+	// 浏览器兼容性检测
+	if (!('serviceWorker' in navigator)) {
+		console.log('❌ 当前浏览器不支持 Service Worker');
+		return;
+	}
+	try {
+		// 监听SW发送的消息
+		navigator.serviceWorker.addEventListener('message', (event) => {
+			if (!event.data) return;
+			// 缓存更新完成通知
+			if (event.data.type === 'CACHE_UPDATED') console.log('✨ PWA缓存已更新为版本:', event.data
+				.version);
+			// 缓存状态提示（命中/离线）
+			if (event.data.type === 'CACHE_STATUS') {
+				const {
+					status,
+					version
+				} = event.data, el = document.getElementById('Status');
+				if (!el) return;
+				const [message, color] = status === 'HIT' ? ['使用缓存加载', '#4caf50'] : 'MISS' ? [
+					'正在缓存资源', '#60b5ff'
+				] : ['离线模式', '#ff9800'];
+				el.style.backgroundColor = color;
+				el.textContent = message;
+				console.log(message + '，当前数据版本:' + version);
+				el.style.display = 'block';
+				setTimeout(() => el.style.display = 'none', 5000);
+			}
+		});
+		// 新SW激活后自动刷新页面
+		navigator.serviceWorker.addEventListener('controllerchange', () => window.location.reload());
+		// 版本更新提示函数
+		const showUpdatePrompt = (worker) => {
+			alert('🟢 检测到云端数据差异：\n🎉 有新版数据可用，程序即将自动重启！');
+			try {
+				worker.postMessage('SKIP_WAITING');
+			} catch (err) {
+				console.error('❌ 发送更新消息失败:', err);
+				window.location.reload();
+			}
+		};
+		// 注册Service Worker 并强制浏览器每次都检查sw.js的更新
+		const registration = await navigator.serviceWorker.register('./sw.js', {
+			updateViaCache: 'none'
+		});
+		console.log('✅ Service Worker 注册成功:', registration.scope);
+		// 处理已存在的待激活版本
+		if (registration.waiting) {
+			console.log('🎉 已有新版本等待激活！');
+			showUpdatePrompt(registration.waiting);
+		}
+		// 监听新版本发现
+		registration.addEventListener('updatefound', () => {
+			const newWorker = registration.installing;
+			console.log('🔄 发现新版本！');
+			newWorker.addEventListener('statechange', () => {
+				if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+					console.log('🎉 新版本已准备好！');
+					showUpdatePrompt(newWorker);
+				}
+			}, {
+				once: true
+			});
+		});
+		return registration;
+	} catch (error) {
+		console.log('❌ Service Worker 注册失败:', error);
+	}
+})();
+// 开始游戏
 document.getElementById('playbut').onclick = async (e) => {
 	e.target.style.display = 'none';
 	document.getElementById('loading').style.display = 'block';
@@ -53,7 +125,7 @@ document.getElementById('playbut').onclick = async (e) => {
 					let servers;
 					ht.innerText = '正在加载云端数据...';
 					try {
-						servers = await fetch('https://server.heheda.top/minecraft/', {
+						servers = await fetch('https://serve.heheda.top/minecraft/', {
 							method: 'POST'
 						});
 						if (servers.ok) {
@@ -148,6 +220,19 @@ document.getElementById('playbut').onclick = async (e) => {
 					// 脚本加载完成后立即执行main()
 					main();
 					terminateWorker();
+					// 开启全屏
+					const htmlel = document.documentElement;
+					if (htmlel.requestFullscreen) {
+						htmlel.requestFullscreen();
+					} else if (htmlel.mozRequestFullScreen) {
+						htmlel.mozRequestFullScreen();
+					} else if (htmlel.webkitRequestFullscreen) {
+						htmlel.webkitRequestFullscreen();
+					} else if (htmlel.msRequestFullscreen) {
+						htmlel.msRequestFullscreen();
+					} else {
+						console.warn('浏览器不支持全屏模式');
+					}
 				}
 				script.onerror = (err) => {
 					handleError(`❌ ${zName} 加载失败: ${err.message}`);
