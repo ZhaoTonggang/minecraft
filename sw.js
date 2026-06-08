@@ -1,6 +1,6 @@
 'use strict';
 // 版本
-const Ver = 1780896623,
+const Ver = 1780896638,
 	cName = 'PWA-';
 // 安装：缓存资源 + 立即激活
 self.addEventListener('install', e => {
@@ -13,7 +13,6 @@ self.addEventListener('install', e => {
 			'./7z/js7z.js',
 			'./7z/js7z.wasm',
 			'./data/minecraft.jpg',
-			'./favicon.png',
 			'./icons/128x128.png',
 			'./icons/144x144.png',
 			'./icons/152x152.png',
