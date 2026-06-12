@@ -1,6 +1,6 @@
 'use strict';
 // 版本
-const Ver = 1780894500,
+const Ver = 1781294032,
 	cName = 'PWA-',
 	postMess = (type, status) => {
 		setTimeout(async () => {
@@ -21,30 +21,30 @@ self.addEventListener('install', e => {
 		try {
 			// 打开缓存并缓存所有资源
 			await (await caches.open(cName + Ver)).addAll([
-				'./',
-				'./404.html',
-				'./7z/js7z.js',
-				'./7z/js7z.wasm',
-				'./data/classes.js',
-				'./images/icons/1024.png',
-				'./images/icons/144.png',
-				'./images/icons/180.png',
-				'./images/icons/192.png',
-				'./images/icons/512.png',
-				'./images/icons/72.png',
-				'./images/icons/a144.png',
-				'./images/icons/a192.png',
-				'./images/icons/a48.png',
-				'./images/icons/a512.png',
-				'./images/icons/a72.png',
-				'./images/icons/a96.png',
-				'./images/minecraft.jpg',
-				'./index.html',
-				'./js/script.js',
-				'./js/worker.js',
-				'./manifest.json',
-				'./style.css'
-			]);
+			'./',
+			'./404.html',
+			'./7z/js7z.js',
+			'./7z/js7z.wasm',
+			'./data/minecraft.jpg',
+			'./images/icons/1024.png',
+			'./images/icons/144.png',
+			'./images/icons/180.png',
+			'./images/icons/192.png',
+			'./images/icons/512.png',
+			'./images/icons/72.png',
+			'./images/icons/a144.png',
+			'./images/icons/a192.png',
+			'./images/icons/a48.png',
+			'./images/icons/a512.png',
+			'./images/icons/a72.png',
+			'./images/icons/a96.png',
+			'./images/minecraft.jpg',
+			'./index.html',
+			'./js/script.js',
+			'./js/worker.js',
+			'./manifest.json',
+			'./style.css'
+		]);
 			// 跳过等待，直接激活新SW
 			await self.skipWaiting();
 		} catch (error) {
