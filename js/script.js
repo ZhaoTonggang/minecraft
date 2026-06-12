@@ -1,77 +1,141 @@
 "use strict";
-// 开始 Service Worker
+let cnstatus = 0,
+	topstatus = 0;
+const apiurl = ['https://serve.heheda.cn/minecraft/', 'https://serve.heheda.top/minecraft/'],
+	hostname = window.location.hostname,
+	playbut = document.getElementById('playbut');
 (async () => {
-	// 浏览器兼容性检测
-	if (!('serviceWorker' in navigator)) {
-		console.log('❌ 当前浏览器不支持 Service Worker');
-		return;
-	}
-	try {
-		// 监听SW发送的消息
-		navigator.serviceWorker.addEventListener('message', (event) => {
-			if (!event.data) return;
-			// 缓存更新完成通知
-			if (event.data.type === 'CACHE_UPDATED') console.log('✨ PWA缓存已更新为版本:', event.data
-				.version);
-			// 缓存状态提示（命中/离线）
-			if (event.data.type === 'CACHE_STATUS') {
-				const {
-					status,
-					version
-				} = event.data, el = document.getElementById('Status');
-				if (!el) return;
-				const [message, color] = status === 'HIT' ? ['使用缓存加载', '#4caf50'] : 'MISS' ? [
-					'正在缓存资源', '#60b5ff'
-				] : ['离线模式', '#ff9800'];
-				el.style.backgroundColor = color;
-				el.textContent = message;
-				console.log(message + '，当前数据版本:' + version);
-				el.style.display = 'block';
-				setTimeout(() => el.style.display = 'none', 5000);
-			}
-		});
-		// 新SW激活后自动刷新页面
-		navigator.serviceWorker.addEventListener('controllerchange', () => window.location.reload());
-		// 版本更新提示函数
-		const showUpdatePrompt = (worker) => {
-			alert('🟢 检测到云端数据差异：\n🎉 有新版数据可用，程序即将自动重启！');
-			try {
-				worker.postMessage('SKIP_WAITING');
-			} catch (err) {
-				console.error('❌ 发送更新消息失败:', err);
-				window.location.reload();
-			}
-		};
-		// 注册Service Worker 并强制浏览器每次都检查sw.js的更新
-		const registration = await navigator.serviceWorker.register('./sw.js', {
-			updateViaCache: 'none'
-		});
-		console.log('✅ Service Worker 注册成功:', registration.scope);
-		// 处理已存在的待激活版本
-		if (registration.waiting) {
-			console.log('🎉 已有新版本等待激活！');
-			showUpdatePrompt(registration.waiting);
-		}
-		// 监听新版本发现
-		registration.addEventListener('updatefound', () => {
-			const newWorker = registration.installing;
-			console.log('🔄 发现新版本！');
-			newWorker.addEventListener('statechange', () => {
-				if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-					console.log('🎉 新版本已准备好！');
-					showUpdatePrompt(newWorker);
+	// 开始 Service Worker
+	if ('serviceWorker' in navigator) {
+		try {
+			// 监听SW发送的消息
+			navigator.serviceWorker.addEventListener('message', (event) => {
+				if (!event.data) return;
+				// 缓存更新完成通知
+				if (event.data.type === 'CACHE_UPDATED') console.log('✨ PWA缓存已更新为版本:', event
+					.data
+					.version);
+				// 缓存状态提示（命中/离线）
+				if (event.data.type === 'CACHE_STATUS') {
+					const {
+						status,
+						version
+					} = event.data, el = document.getElementById('Status');
+					if (!el) return;
+					const [message, color] = status === 'HIT' ? ['使用缓存加载', '#4caf50'] : status ===
+						'MISS' ? ['正在缓存资源', '#60b5ff'] : ['离线模式', '#ff9800'];
+					el.style.backgroundColor = color;
+					el.textContent = message;
+					console.log(message + '，当前数据版本:' + version);
+					el.style.display = 'block';
+					setTimeout(() => el.style.display = 'none', 5000);
 				}
-			}, {
-				once: true
 			});
-		});
-		return registration;
-	} catch (error) {
-		console.log('❌ Service Worker 注册失败:', error);
+			// 新SW激活后自动刷新页面
+			let isFirstInstall = true;
+			navigator.serviceWorker.addEventListener('controllerchange', () => {
+				if (!isFirstInstall) window.location.reload();
+				isFirstInstall = false;
+			});
+			// 版本更新提示函数
+			const showUpdatePrompt = (worker) => {
+				alert(' 检测到云端数据差异：\n 有新版数据可用，程序即将自动重启！');
+				try {
+					worker.postMessage('SKIP_WAITING');
+				} catch (err) {
+					console.error('❌ 发送更新消息失败:', err);
+					window.location.reload();
+				}
+			};
+			// 注册Service Worker 并强制浏览器每次都检查sw.js的更新
+			const registration = await navigator.serviceWorker.register('./sw.js', {
+				updateViaCache: 'none'
+			});
+			console.log('✅ Service Worker 注册成功:', registration.scope);
+			// 处理已存在的待激活版本
+			if (registration.waiting) {
+				console.log(' 已有新版本等待激活！');
+				showUpdatePrompt(registration.waiting);
+			}
+			// 监听新版本发现
+			registration.addEventListener('updatefound', () => {
+				const newWorker = registration.installing;
+				console.log(' 发现新版本！');
+				newWorker.addEventListener('statechange', () => {
+					if (newWorker.state === 'installed' && navigator.serviceWorker
+						.controller) {
+						console.log(' 新版本已准备好！');
+						showUpdatePrompt(newWorker);
+					}
+				}, {
+					once: true
+				});
+			});
+		} catch (error) {
+			console.log('❌ Service Worker 注册失败:', error);
+		}
+	} else {
+		console.log('❌ 当前浏览器不支持 Service Worker');
 	}
+	// 使用Fetch API测试URL延迟
+	const testLatency = async (url) => {
+		const controller = new AbortController(),
+			timer = setTimeout(() => controller.abort(), 5000);
+		try {
+			const startTime = Date.now();
+			await fetch(url, {
+				method: 'HEAD', // 使用HEAD请求只获取响应头，减少数据传输
+				signal: controller.signal,
+				cache: 'no-store' // 禁用缓存
+			});
+			return Date.now() - startTime;
+		} catch (err) {
+			if (err.name === 'AbortError') {
+				throw new Error(`请求超时！`);
+			}
+			throw err;
+		} finally {
+			clearTimeout(timer);
+		}
+	}
+	// 使用示例
+	try {
+		const results = await Promise.allSettled([
+			testLatency(apiurl[0]),
+			testLatency(apiurl[1])
+		]);
+		// 分别处理每个请求的结果
+		const apicn = document.getElementById('apicn'),
+			apitop = document.getElementById('apitop');
+		if (results[0].status === 'fulfilled') {
+			cnstatus = 1;
+			apicn.style.color = 'green';
+			apicn.title = '线路一正常';
+			console.log(`线路一延迟: ${results[0].value}ms`);
+		} else {
+			apicn.style.color = 'red';
+			apicn.title = '线路一超时';
+			console.error('线路一延迟测试失败:', results[0].reason);
+		}
+		if (results[1].status === 'fulfilled') {
+			topstatus = 1;
+			apitop.style.color = 'green';
+			apitop.title = '线路二正常';
+			console.log(`线路二延迟: ${results[1].value}ms`);
+		} else {
+			apitop.style.color = 'red';
+			apitop.title = '线路二超时';
+			console.error('线路二延迟测试失败:', results[1].reason);
+		}
+	} catch (err) {
+		// 此处只会捕获代码执行中的异常，不会捕获单个请求的错误
+		console.error('程序执行异常:', err);
+	}
+	playbut.textContent = '开始游戏';
+	playbut.disabled = false;
 })();
 // 开始游戏
-document.getElementById('playbut').onclick = async (e) => {
+playbut.onclick = async (e) => {
 	e.target.style.display = 'none';
 	document.getElementById('loading').style.display = 'block';
 	const ht = document.getElementById('ht');
@@ -122,59 +186,71 @@ document.getElementById('playbut').onclick = async (e) => {
 				script.onload = async () => {
 					handleOk(`${zName} 加载完成`);
 					// 联机服务器
-					let servers;
-					ht.innerText = '正在加载云端数据...';
-					try {
-						servers = await fetch('https://serve.heheda.top/minecraft/', {
-							method: 'POST'
-						});
-						if (servers.ok) {
-							servers = (await servers.json()).data;
-							handleOk('云端数据加载成功');
-						}
-					} catch {
-						servers = [{
-								"name": "Voidsent MC",
-								"addr": "wss://mc.voidsent.net"
-							},
-							{
-								"name": "VanillaMC",
-								"addr": "wss://vanillamc.org"
-							},
-							{
-								"name": "TuffNET",
-								"addr": "wss://tuff.ws"
-							},
-							{
-								"name": "Dumbshit Survival X | 1.12.2 | Vanilla Survival",
-								"addr": "wss://mc.dssx.uk"
-							},
-							{
-								"name": "Lifesteal & Creative & Anarchy",
-								"addr": "wss://play.heartsmp.net"
-							},
-							{
-								"name": "Fyre Network (BACK ONLINE!!)",
-								"addr": "wss://eagler.imcalledfyre.com"
-							},
-							{
-								"name": "null's World",
-								"addr": "wss://mc.nullsworld.net"
-							},
-							{
-								"name": "MercuryMC",
-								"addr": "wss://mercurymc.net"
-							},
-							{
-								"name": "xenaMC",
-								"addr": "wss://xenamc.com"
-							},
-							{
-								"name": "SkeletonMC",
-								"addr": "wss://eagler.skeletonmc.com"
+					const serdata = () => {
+							handleOk('云端数据加载失败，使用默认数据');
+							return [{
+									"name": "Voidsent MC",
+									"addr": "wss://mc.voidsent.net"
+								},
+								{
+									"name": "VanillaMC",
+									"addr": "wss://vanillamc.org"
+								},
+								{
+									"name": "TuffNET",
+									"addr": "wss://tuff.ws"
+								},
+								{
+									"name": "Dumbshit Survival X | 1.12.2 | Vanilla Survival",
+									"addr": "wss://mc.dssx.uk"
+								},
+								{
+									"name": "Lifesteal & Creative & Anarchy",
+									"addr": "wss://play.heartsmp.net"
+								},
+								{
+									"name": "Fyre Network (BACK ONLINE!!)",
+									"addr": "wss://eagler.imcalledfyre.com"
+								},
+								{
+									"name": "null's World",
+									"addr": "wss://mc.nullsworld.net"
+								},
+								{
+									"name": "MercuryMC",
+									"addr": "wss://mercurymc.net"
+								},
+								{
+									"name": "xenaMC",
+									"addr": "wss://xenamc.com"
+								},
+								{
+									"name": "SkeletonMC",
+									"addr": "wss://eagler.skeletonmc.com"
+								}
+							]
+						},
+						apifetch = async (a) => {
+							try {
+								const postapi = await fetch(a, {
+									method: 'POST'
+								});
+								if (postapi.ok) {
+									handleOk('云端数据加载成功');
+									return (await postapi.json()).data;
+								}
+							} catch {
+								return serdata();
 							}
-						];
-						handleOk('云端数据加载失败，使用本地数据');
+						};
+					ht.innerText = '正在加载云端数据...';
+					let servers;
+					if (cnstatus && (hostname.includes('heheda.cn') || !topstatus)) {
+						servers = await apifetch(apiurl[0]);
+					} else if (topstatus) {
+						servers = await apifetch(apiurl[1]);
+					} else {
+						servers = serdata();
 					}
 					// 配置游戏参数
 					const relayId = Math.floor(Math.random() * 3);
@@ -189,10 +265,8 @@ document.getElementById('playbut').onclick = async (e) => {
 						worldsDB: "worlds",
 						resourcePacksDB: "resource",
 						enableDownloadOfflineButton: true,
-						downloadOfflineButtonLink: "https://gamebox.heheda." + (
-							/^(.*\.)?heheda\.cn$/.test(window.location.hostname) ? 'cn' :
-							'top'
-						),
+						downloadOfflineButtonLink: "https://gamebox.heheda." + (hostname
+							.includes('heheda.cn') ? 'cn' : 'top'),
 						forceWebGL2: true,
 						html5CursorSupport: true,
 						servers: servers,

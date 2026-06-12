@@ -31,13 +31,18 @@ body {
 	border: 10px ridge rgb(0 119 62 / 60%);
 }
 
-.h1 {
+.h1,
+.playp {
 	color: #712f00;
 	margin: 0;
 }
 
 .hb {
 	padding-bottom: 20px;
+}
+
+.playp {
+	font-size: 40px;
 }
 
 #ht {

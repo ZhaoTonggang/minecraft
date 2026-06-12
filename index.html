@@ -41,7 +41,17 @@
 		<div id="Status"></div>
 		<!-- 游戏容器 -->
 		<div id="game_frame">
-			<button id="playbut">开始游戏</button>
+			<button id="playbut" disabled>
+				<div class="sk-chase">
+					<div class="sk-chase-dot"></div>
+					<div class="sk-chase-dot"></div>
+					<div class="sk-chase-dot"></div>
+					<div class="sk-chase-dot"></div>
+					<div class="sk-chase-dot"></div>
+					<div class="sk-chase-dot"></div>
+				</div>
+				<p class="playp">数据加载中</p>
+			</button>
 			<div id="loading">
 				<h2 class="h1 hb">若长时间停留此页面，请尝试刷新网页，或更换网络环境后重试！</h2>
 				<div class="sk-chase">
@@ -54,10 +64,12 @@
 				</div>
 				<h1 id="ht" class="h1">正在准备中...</h1>
 			</div>
-			<p class="footer">由 <a class="cf" href="https://www.cloudflare.com" target="_blank"><img
+			<p class="footer">云端状态：<b id="apicn" title="线路一状态未知">●</b>线路一 | <b id="apitop"
+					title="线路二状态未知">●</b>线路二<br />由 <a class="cf" href="https://www.cloudflare.com" target="_blank"><img
 						src="https://www.cloudflare.com/favicon.ico" alt="Cloudflare"> Cloudflare</a> 和 <a class="eo"
 					href="https://curl.qcloud.com/0f8yZ85J" target="_blank"><img src="https://edgeone.ai/favicon.ico"
-						alt="EdgeOne"> EdgeOne</a> 提供CDN服务</p>
+						alt="EdgeOne"> EdgeOne</a> 提供CDN服务
+			</p>
 		</div>
 		<!-- js -->
 		<script defer type='text/javascript' src="./js/script.js"></script>
