@@ -1,6 +1,7 @@
 * {
 	user-select: none;
 	scroll-behavior: smooth;
+	font-family: YouYuan, Yuanti SC, KaiTi, Arial, sans-serif;
 }
 
 body {
@@ -243,7 +244,6 @@ button:focus {
 	color: #fff;
 	padding: 8px;
 	border-radius: 4px;
-	font-family: Arial, sans-serif;
 	font-size: 18px;
 	z-index: 9999;
 	animation: fadeInOut 5s ease-in-out forwards;
