@@ -1,6 +1,6 @@
 'use strict';
 // 版本
-const Ver = 1781385361,
+const Ver = 1781432947,
 	cName = 'PWA-',
 	postMess = (type, status) => {
 		setTimeout(async () => {
@@ -26,6 +26,7 @@ self.addEventListener('install', e => {
 			'./7z/js7z.js',
 			'./7z/js7z.wasm',
 			'./data/minecraft.jpg',
+			'./favicon.ico',
 			'./images/icons/1024.png',
 			'./images/icons/144.png',
 			'./images/icons/180.png',
@@ -39,6 +40,8 @@ self.addEventListener('install', e => {
 			'./images/icons/a72.png',
 			'./images/icons/a96.png',
 			'./images/minecraft.jpg',
+			'./images/other/cloudflare.ico',
+			'./images/other/edgeone.ico',
 			'./index.html',
 			'./js/script.js',
 			'./js/worker.js',
