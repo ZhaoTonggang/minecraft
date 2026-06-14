@@ -63,28 +63,34 @@ body {
 	bottom: 0;
 	margin: .5em;
 	text-shadow: 0 0 5px #ff4193aa, 0 0 1em #ff4193;
+}
 
-	img {
-		height: 15px;
-		width: 15px;
-	}
+.footer img {
+	height: 15px;
+	width: 15px;
+	margin-right: 5px;
+}
 
-	.cf {
-		color: #f9ab41;
-	}
+.footer .cf {
+	color: #f9ab41;
+}
 
-	.eo {
-		color: #02c3fb;
-	}
+.footer .eo {
+	color: #02c3fb;
+}
 
-	a {
-		-webkit-text-decoration: inherit;
-		text-decoration: inherit;
-	}
+.footer a {
+	-webkit-text-decoration: inherit;
+	text-decoration: inherit;
+}
 
-	a:hover {
-		color: #ff4193;
-	}
+.footer a:hover {
+	color: #ff4193;
+}
+
+.footer #apicn,
+.footer #apitop {
+	margin-right: 5px;
 }
 
 /* 开始按钮 */

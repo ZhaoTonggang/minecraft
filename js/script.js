@@ -39,7 +39,7 @@ const apiurl = ['https://serve.heheda.cn/minecraft/', 'https://serve.heheda.top/
 			});
 			// 版本更新提示函数
 			const showUpdatePrompt = (worker) => {
-				alert(' 检测到云端数据差异：\n 有新版数据可用，程序即将自动重启！');
+				alert('🟢 检测到云端数据差异：\n🎉 有新版数据可用，程序即将自动重启！');
 				try {
 					worker.postMessage('SKIP_WAITING');
 				} catch (err) {
