@@ -3,7 +3,12 @@ let cnstatus = 0,
 	topstatus = 0;
 const apiurl = ['https://serve.heheda.cn/minecraft/', 'https://serve.heheda.top/minecraft/'],
 	hostname = window.location.hostname,
-	playbut = document.getElementById('playbut');
+	gamebox = "https://gamebox.heheda." + (hostname.includes('heheda.cn') ? 'cn' : 'top'),
+	butDiv = document.getElementById('butdiv'),
+	textDiv = document.getElementById('textdiv'),
+	playbut = document.getElementById('playbut'),
+	htText = document.getElementById('ht');
+document.getElementById('moregame').href = gamebox;
 (async () => {
 	// 开始 Service Worker
 	if ('serviceWorker' in navigator) {
@@ -52,11 +57,6 @@ const apiurl = ['https://serve.heheda.cn/minecraft/', 'https://serve.heheda.top/
 				updateViaCache: 'none'
 			});
 			console.log('✅ Service Worker 注册成功:', registration.scope);
-			// 处理已存在的待激活版本
-			if (registration.waiting) {
-				console.log(' 已有新版本等待激活！');
-				showUpdatePrompt(registration.waiting);
-			}
 			// 监听新版本发现
 			registration.addEventListener('updatefound', () => {
 				const newWorker = registration.installing;
@@ -73,6 +73,61 @@ const apiurl = ['https://serve.heheda.cn/minecraft/', 'https://serve.heheda.top/
 			});
 		} catch (error) {
 			console.log('❌ Service Worker 注册失败:', error);
+		}
+		// PWA安装提示 - 在PWA就绪后触发
+		const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+			window.navigator.standalone === true;
+		let pwaInstallEvent = null;
+		const showBar = () => {
+			const bar = document.getElementById('pwaBar'),
+				text = document.getElementById('pwaText'),
+				installBtn = document.getElementById('butOne'),
+				dismissBtn = document.getElementById('butTwo');
+			if (pwaInstallEvent) {
+				text.textContent = '推荐您将此网站安装为应用！';
+				installBtn.textContent = '立刻安装';
+				installBtn.addEventListener('click', () => {
+					if (pwaInstallEvent) {
+						pwaInstallEvent.prompt();
+						pwaInstallEvent.userChoice.then((choiceResult) => {
+							if (choiceResult.outcome === 'accepted') {
+								console.log('用户接受了PWA安装');
+							} else {
+								console.log('用户拒绝了PWA安装');
+							}
+							pwaInstallEvent = null;
+						});
+					}
+					bar.style.display = 'none';
+				});
+				dismissBtn.textContent = '下次一定';
+				dismissBtn.addEventListener('click', () => bar.style.display = 'none');
+			} else {
+				dismissBtn.style.display = 'none';
+				text.textContent = '检测到您已安装此应用，推荐从桌面或主屏幕打开！';
+				installBtn.textContent = '知 道 了';
+				installBtn.addEventListener('click', () => bar.style.display = 'none');
+			}
+			bar.style.display = 'inline';
+		};
+		if (!isStandalone) {
+			window.addEventListener('beforeinstallprompt', (e) => {
+				e.preventDefault();
+				pwaInstallEvent = e;
+				// 立即显示场景1（未安装）
+				showBar();
+			});
+			window.addEventListener('appinstalled', () => {
+				document.getElementById('pwaBar').style.display = 'none';
+			});
+		}
+		// PWA就绪后，等待3秒再显示场景2（已安装），避免beforeinstallprompt尚未触发时误判
+		if (!isStandalone) {
+			navigator.serviceWorker.ready.then(() => {
+				setTimeout(() => {
+					if (!pwaInstallEvent) showBar();
+				}, 3000);
+			}).catch(() => {});
 		}
 	} else {
 		console.log('❌ 当前浏览器不支持 Service Worker');
@@ -131,23 +186,23 @@ const apiurl = ['https://serve.heheda.cn/minecraft/', 'https://serve.heheda.top/
 		// 此处只会捕获代码执行中的异常，不会捕获单个请求的错误
 		console.error('程序执行异常:', err);
 	}
-	playbut.textContent = '开始游戏';
-	playbut.disabled = false;
+	textDiv.style.display = 'none';
+	butDiv.style.display = 'inline-block';
 })();
 // 开始游戏
-playbut.onclick = async (e) => {
-	e.target.style.display = 'none';
-	document.getElementById('loading').style.display = 'block';
-	const ht = document.getElementById('ht');
+playbut.onclick = async () => {
+	htText.textContent = '正在准备中...';
+	butDiv.style.display = 'none';
+	textDiv.style.display = 'block';
 	// 封装错误处理函数
 	const handleError = (err) => {
 		console.error('❌ ' + err);
-		ht.innerText = `错误: ${err}`;
+		htText.innerText = `错误: ${err}`;
 	}
-	// 封装错误处理函数
+	// 封装操作成功函数
 	const handleOk = (a) => {
 		console.log('✅ ' + a);
-		ht.innerText = a;
+		htText.innerText = a;
 	}
 	// 封装Worker终止逻辑
 	const terminateWorker = () => {
@@ -168,7 +223,7 @@ playbut.onclick = async (e) => {
 		} = msg.data;
 		switch (type) {
 			case 'status':
-				ht.innerText = data;
+				htText.innerText = data;
 				break;
 			case 'error':
 				handleError(`Worker返回错误: ${error}`);
@@ -243,7 +298,7 @@ playbut.onclick = async (e) => {
 								return serdata();
 							}
 						};
-					ht.innerText = '正在加载云端数据...';
+					htText.innerText = '正在加载云端数据...';
 					let servers;
 					if (cnstatus && (hostname.includes('heheda.cn') || !topstatus)) {
 						servers = await apifetch(apiurl[0]);
@@ -265,8 +320,7 @@ playbut.onclick = async (e) => {
 						worldsDB: "worlds",
 						resourcePacksDB: "resource",
 						enableDownloadOfflineButton: true,
-						downloadOfflineButtonLink: "https://gamebox.heheda." + (hostname
-							.includes('heheda.cn') ? 'cn' : 'top'),
+						downloadOfflineButtonLink: gamebox,
 						forceWebGL2: true,
 						html5CursorSupport: true,
 						servers: servers,
@@ -312,7 +366,7 @@ playbut.onclick = async (e) => {
 					handleError(`❌ ${zName} 加载失败: ${err.message}`);
 					terminateWorker();
 				}
-				ht.innerText = '正在准备环境...';
+				htText.innerText = '正在准备环境...';
 				// 添加到body执行
 				document.body.appendChild(script);
 				break;
