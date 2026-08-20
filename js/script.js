@@ -12,6 +12,75 @@ document.getElementById('moregame').href = gamebox;
 (async () => {
 	// 开始 Service Worker
 	if ('serviceWorker' in navigator) {
+		// PWA安装提示 - 在SW注册前绑定事件，确保不遗漏beforeinstallprompt
+		const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+			window.navigator.standalone === true,
+			bar = document.getElementById('pwaBar'),
+			text = document.getElementById('pwaText'),
+			installBtn = document.getElementById('butOne'),
+			dismissBtn = document.getElementById('butTwo');
+		let pwaInstallEvent = null,
+			pwaReady = false,
+			pwaShown = false;
+		const updateBarToInstall = () => {
+				text.textContent = '推荐您将此网站安装为应用！';
+				installBtn.textContent = '立刻安装';
+				installBtn.onclick = () => {
+					if (!pwaInstallEvent) return;
+					bar.style.display = 'none';
+					try {
+						pwaInstallEvent.prompt();
+					} catch {
+						// prompt已被消费（用户之前拒绝过）
+						text.textContent = '请在浏览器地址栏点击安装图标';
+						installBtn.textContent = '知道了';
+						installBtn.onclick = () => bar.style.display = 'none';
+						bar.style.display = 'inline';
+						return;
+					}
+					pwaInstallEvent.userChoice.then((choiceResult) => {
+						if (choiceResult.outcome === 'accepted') {
+							console.log('用户接受了PWA安装');
+							pwaInstallEvent = null;
+						} else {
+							console.log('用户拒绝了PWA安装');
+							bar.style.display = 'inline';
+						}
+					}).catch(() => {
+						bar.style.display = 'inline';
+					});
+				};
+				dismissBtn.textContent = '下次一定';
+				dismissBtn.style.display = 'inline-block';
+				dismissBtn.onclick = () => bar.style.display = 'none';
+			},
+			showBar = () => {
+				if (pwaShown) return;
+				pwaShown = true;
+				if (pwaInstallEvent) {
+					updateBarToInstall();
+				} else {
+					dismissBtn.style.display = 'none';
+					text.textContent = '检测到您已安装此应用，推荐从桌面或主屏幕打开！';
+					installBtn.textContent = ' 知 道 了 ';
+					installBtn.onclick = () => bar.style.display = 'none';
+				}
+				bar.style.display = 'inline';
+			};
+		if (!isStandalone) {
+			window.addEventListener('beforeinstallprompt', (e) => {
+				e.preventDefault();
+				pwaInstallEvent = e;
+				if (pwaShown) {
+					updateBarToInstall();
+				} else if (pwaReady) {
+					showBar();
+				}
+			});
+			window.addEventListener('appinstalled', () => {
+				document.getElementById('pwaBar').style.display = 'none';
+			});
+		}
 		try {
 			// 监听SW发送的消息
 			navigator.serviceWorker.addEventListener('message', (event) => {
@@ -74,59 +143,11 @@ document.getElementById('moregame').href = gamebox;
 		} catch (error) {
 			console.log('❌ Service Worker 注册失败:', error);
 		}
-		// PWA安装提示 - 在PWA就绪后触发
-		const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
-			window.navigator.standalone === true;
-		let pwaInstallEvent = null;
-		const showBar = () => {
-			const bar = document.getElementById('pwaBar'),
-				text = document.getElementById('pwaText'),
-				installBtn = document.getElementById('butOne'),
-				dismissBtn = document.getElementById('butTwo');
-			if (pwaInstallEvent) {
-				text.textContent = '推荐您将此网站安装为应用！';
-				installBtn.textContent = '立刻安装';
-				installBtn.addEventListener('click', () => {
-					if (pwaInstallEvent) {
-						pwaInstallEvent.prompt();
-						pwaInstallEvent.userChoice.then((choiceResult) => {
-							if (choiceResult.outcome === 'accepted') {
-								console.log('用户接受了PWA安装');
-							} else {
-								console.log('用户拒绝了PWA安装');
-							}
-							pwaInstallEvent = null;
-						});
-					}
-					bar.style.display = 'none';
-				});
-				dismissBtn.textContent = '下次一定';
-				dismissBtn.addEventListener('click', () => bar.style.display = 'none');
-			} else {
-				dismissBtn.style.display = 'none';
-				text.textContent = '检测到您已安装此应用，推荐从桌面或主屏幕打开！';
-				installBtn.textContent = '知 道 了';
-				installBtn.addEventListener('click', () => bar.style.display = 'none');
-			}
-			bar.style.display = 'inline';
-		};
-		if (!isStandalone) {
-			window.addEventListener('beforeinstallprompt', (e) => {
-				e.preventDefault();
-				pwaInstallEvent = e;
-				// 立即显示场景1（未安装）
-				showBar();
-			});
-			window.addEventListener('appinstalled', () => {
-				document.getElementById('pwaBar').style.display = 'none';
-			});
-		}
-		// PWA就绪后，等待3秒再显示场景2（已安装），避免beforeinstallprompt尚未触发时误判
+		// PWA就绪后，等待3秒再判断显示场景1或2（放在try/catch外，确保SW已存在时也能触发）
 		if (!isStandalone) {
 			navigator.serviceWorker.ready.then(() => {
-				setTimeout(() => {
-					if (!pwaInstallEvent) showBar();
-				}, 3000);
+				pwaReady = true;
+				setTimeout(showBar, 3000);
 			}).catch(() => {});
 		}
 	} else {
